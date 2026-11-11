@@ -1,0 +1,19 @@
+# 依赖和产物在镜像里重新装/重新构建,塞进上下文只会让 docker build 变慢几十秒
+**/node_modules
+**/dist
+**/dist.zip
+**/.turbo
+**/coverage
+
+.git
+.github
+.vscode
+.idea
+.changeset
+
+# 开发期的环境文件不进镜像:生产用 .env.production(已在 apps/*/ 里,会被 COPY apps 带进去)
+**/.env.local
+**/.env.*.local
+
+*.log
+npm-debug.log*

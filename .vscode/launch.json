@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "web-ele: 启动开发服务",
+      "command": "pnpm run dev:ele",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "web-ele: 断点调试",
+      "url": "http://localhost:5777",
+      "webRoot": "${workspaceFolder}/apps/web-ele",
+      "sourceMaps": true,
+      "resolveSourceMapLocations": null,
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*",
+        "http://localhost:5777/@fs/*": "${workspaceFolder}/*",
+        "http://localhost:5777/@id/*": "${workspaceFolder}/*",
+        "http://localhost:5777/*": "${workspaceFolder}/apps/web-ele/*"
+      },
+      "preLaunchTask": "dev:ele"
+    }
+  ]
+}

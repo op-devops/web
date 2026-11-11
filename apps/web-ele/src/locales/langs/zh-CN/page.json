@@ -1,0 +1,12 @@
+{
+  "auth": {
+    "login": "登录",
+    "profile": "个人中心"
+  },
+  "deerflow": {
+    "catalog": "内容目录",
+    "books": "书籍管理",
+    "departments": "部门管理",
+    "agents": "智能体管理"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "auth": {
+    "login": "Login",
+    "profile": "Profile"
+  },
+  "deerflow": {
+    "catalog": "Catalog",
+    "books": "Books",
+    "departments": "Departments",
+    "agents": "Agents"
+  }
+}
