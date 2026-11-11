@@ -1,102 +1,120 @@
-vue-vben-admin/
-│
-├── apps/                                 ← 应用层(你的业务代码)
-│   └── web-ele/
-│       ├── src/
-│       │   ├── api/
-│       │   │   ├── core/                 框架约定的接口,名字和返回结构不能随便改
-│       │   │   │   ├── auth.ts           验证码 + 登录 + 登出
-│       │   │   │   ├── user.ts           查当前用户(GET /self),roles 里塞了权限码
-│       │   │   │   └── menu.ts           动态菜单(当前用前端模式,没实际调用)
-│       │   │   ├── system/               你加的:账号/角色/登录历史/个人中心
-│       │   │   ├── deerflow/             遗留,路由已删,可清理
-│       │   │   └── request.ts            axios 实例 + 拦截器(Envelope 的 401 处理在这)
-│       │   ├── views/
-│       │   │   ├── _core/                框架页面
-│       │   │   │   ├── authentication/   登录页(你改过,加了验证码)
-│       │   │   │   ├── fallback/         403/404/500
-│       │   │   │   └── profile/          个人中心
-│       │   │   ├── system/               账号管理 / 角色管理 / 登录历史
-│       │   │   │   └── codes.ts          12 模块 88 个权限码的定义
-│       │   │   ├── agents/  catalog/     vben demo 页面,可删
-│       │   ├── router/
-│       │   │   ├── routes/modules/       system.ts(系统管理的路由和菜单)
-│       │   │   ├── routes/core.ts        登录/404 等基础路由
-│       │   │   ├── access.ts             路由级权限过滤(读 userInfo.roles)
-│       │   │   └── guard.ts              导航守卫:未登录跳登录页
-│       │   ├── composables/use-perm.ts   你写的,超管绕过 hasAccessByCodes 的精确匹配
-│       │   ├── adapter/                  把 Element Plus 组件接到 vben 的表单/表格协议上
-│       │   ├── store/                    应用级 Pinia store
-│       │   ├── layouts/                  basic(后台壳) / auth(登录页壳)
-│       │   ├── locales/langs/            zh-CN / en-US 文案
-│       │   └── config/books.json         demo 假数据 172K,可删
-│       ├── .env.development              VITE_PORT=5777 在这
-│       ├── vite.config.ts                第一行 import @vben/vite-config
-│       ├── tsconfig.json                 extends @vben/tsconfig/web-app.json
-│       └── index.html
-│
-├── packages/                             ← 运行时框架(62509 行,会打进 JS 产物)
-│   │
-│   ├── @core/                            最底层,不认识任何 UI 库
-│   │   ├── base/
-│   │   │   ├── design/                   CSS 变量、主题色算法
-│   │   │   ├── icons/                    图标基础设施
-│   │   │   ├── shared/                   纯函数工具
-│   │   │   └── typings/                  基础类型
-│   │   ├── ui-kit/                       无样式组件,基于 Radix Vue
-│   │   │   ├── shadcn-ui/                按钮/输入框/下拉等原子组件
-│   │   │   ├── form-ui/                  表单引擎
-│   │   │   ├── layout-ui/                布局骨架
-│   │   │   ├── menu-ui/                  菜单
-│   │   │   ├── tabs-ui/                  标签页
-│   │   │   └── popup-ui/                 弹窗/抽屉
-│   │   ├── composables/                  通用组合式函数
-│   │   └── preferences/                  偏好设置内核
-│   │
-│   ├── effects/                          中间层,有业务概念了
-│   │   ├── layouts/        ★4 处         后台的壳:侧边栏/顶栏/标签页/面包屑
-│   │   ├── common-ui/      ★21 处        业务组件:Modal/Drawer/Form/Table/认证页
-│   │   ├── access/         ★3 处         权限:hasAccessByCodes 在这
-│   │   ├── request/        ★2 处         HTTP 封装,你的 request.ts 基于它
-│   │   ├── hooks/          ★3 处         usePagination 之类
-│   │   └── plugins/        ★4 处         echarts / vxe-table / motion / tiptap
-│   │
-│   ├── types/  constants/  utils/        跨层公共
-│   ├── icons/                            iconify + 自定义 svg
-│   ├── locales/                          框架层文案
-│   ├── preferences/                      主题、布局模式、动画开关
-│   ├── stores/modules/                   Pinia:user / access / tabbar
-│   └── styles/
-│       ├── ele/                          ← 你用的这套
-│       └── antd/ antdv-next/ naive/      其它 UI 库的适配样式
-│
-├── internal/                             ← 构建工具链(不进产物)
-│   ├── vite-config/src/
-│   │   ├── config/                       application / library 两种预设
-│   │   ├── plugins/                      压缩、mock、打包分析、archiver
-│   │   └── utils/
-│   ├── tsconfig/                         base / library / node / web / web-app
-│   ├── tailwind-config/                  Tailwind 预设,主题变量、暗色规则
-│   ├── lint-configs/                     eslint / stylelint / commitlint / oxlint
-│   └── node-utils/                       脚本自用工具
-│
-├── scripts/
-│   ├── deploy/                           build-local-docker-image.sh
-│   ├── turbo-run/                        pnpm dev 的交互式选择器
-│   ├── vsh/                              自制 CLI:lint / check-dep / check-circular
-│   └── clean.mjs
-│
-├── docker/openresty/nginx.conf           ← 你加的
-├── Dockerfile                            ← 你加的:node 构建 → openresty
-├── docker-compose.yml                    ← 你加的
-│
-├── pnpm-workspace.yaml                   声明 workspace 成员 + catalog(218 行统一版本)
-├── turbo.json                            任务编排和缓存,决定构建顺序
-├── package.json                          根脚本:dev:ele / build:ele / check
-└── node_modules/                         1.4G,pnpm 硬链接到全局 store
+# web
 
-★ 标的是 apps/web-ele/src 里实际 import 的次数，共 69 处。
+[op-devops](https://github.com/op-devops) 运维平台的前端，基于 [Vben Admin](https://github.com/vbenjs/vue-vben-admin) 的 Element Plus 版本（`apps/web-ele`）二次开发。
 
-三层的分界：@core 换掉 Element Plus 也不用动 → effects 依赖 store 和路由 → apps 是具体应用。官方原本有 web-antd、web-naive 两个同级应用共用前两层，这个仓库只留了 web-ele。
+## 功能
 
-internal 和 packages 的区别：前者只在 pnpm dev / pnpm build 时跑，后者会被打进浏览器加载的 JS。
+| 菜单 | 页面 | 对接的后端 |
+|---|---|---|
+| 主机管理 | 主机与分类管理、SSH 连通性验证、Web 终端（xterm.js + trzsz 文件传输） | cmdb、terminal |
+| 任务计划 | 计划任务的增删改查、启用停用；间隔 / 一次性 / Cron 三种触发方式 | cron |
+| 会话审计 | 录像回放（asciinema-player）、命令审计、在线会话实时监控 | terminal |
+| 系统管理 | 账户管理、角色管理（分配权限码、主机可见范围）、登录日志 | auth |
+
+另外：登录页带图形验证码；页面水印显示当前操作人，终端页还会标注目标主机。
+
+## 技术栈
+
+Vue 3 · TypeScript · Vite · Element Plus · Pinia · Vue Router · Tailwind CSS · pnpm workspace + Turborepo
+
+## 本地开发
+
+环境要求：Node.js `^22.18.0 || ^24`，pnpm `>= 11`。
+
+```bash
+pnpm install
+pnpm dev:ele        # http://localhost:5777
+```
+
+开发服务器会把 `/api` 请求代理到本机的 APISIX（`127.0.0.1:9080`），所以要先把 [infra](https://github.com/op-devops/infra) 和用到的后端模块跑起来。代理规则在 `apps/web-ele/vite.config.ts`：
+
+| 前端请求 | 转发到 APISIX | 后端模块 |
+|---|---|---|
+| `/api/auth/*`、`/api/users/*`、`/api/roles/*`、`/api/self/*`、`/api/login-history/*` | `/auth-api/*` | auth |
+| `/api/cmdb/*` | `/cmdb-api/*` | cmdb |
+| `/api/terminal/*`（含 WebSocket） | `/terminal-api/*` | terminal |
+| `/api/cron/*` | `/cron-api/*` | cron |
+
+没匹配到上面任何前缀的 `/api` 请求不会转发，避免拼错的路径悄悄落到某个模块上。
+
+VS Code / Cursor 用户可以直接用 `.vscode/launch.json` 里的「web-ele: 断点调试」：先起开发服务器，再打开一个可在编辑器里打断点的 Chrome。
+
+## 构建与部署
+
+```bash
+pnpm build:ele      # 产物在 apps/web-ele/dist
+./deploy.sh         # 构建 Docker 镜像并启动容器，http://127.0.0.1:8080
+```
+
+镜像分两阶段：Node 构建静态资源，再交给 OpenResty 托管。`docker/openresty/nginx.conf` 负责把 `/api/*` 按上表的规则反代到 APISIX，生产和开发走同一条链路。
+
+容器要加入中间件栈创建的 `devops-net` 网络，才能解析到 `apisix`，所以部署前要先启动 infra。`deploy.sh` 还支持 `build` / `up` / `down` / `restart` / `logs` 子命令。
+
+## 权限
+
+后端下发扁平的权限码，格式是 `模块.页面.动作`，例如 `host.host.view`、`cron.task.edit`。同一个权限码要在三处保持一致：
+
+1. 后端网关接口上的 `RequirePerm(...)`
+2. `apps/web-ele/src/views/system/codes.ts`：角色授权页里能勾选的权限码清单
+3. 路由的 `meta.authority`，以及页面按钮上的 `can(...)` 判断
+
+超级管理员在前端映射为通配符 `*`。vben 自带的 `hasAccessByCodes` 是精确匹配、不认通配符，所以按钮权限统一用 `composables/use-perm.ts` 里的 `can()` 判断。
+
+## 新增一个页面
+
+以「任务计划」为例：
+
+1. **API**：在 `src/api/cron/` 写接口函数和类型，再从 `src/api/index.ts` 导出。
+2. **路由**：在 `src/router/routes/modules/` 新建 `cron.ts`。这个目录下的文件会被自动加载，权限写 `authority: anyOf('cron.task.view')`。
+3. **页面**：新建 `src/views/cron/index.vue`。`defineOptions({ name })` 要和路由的 `name` 一致，否则 keepAlive 不生效。
+4. **权限码**：在 `codes.ts` 里加上对应的模块、页面和动作。
+5. **代理**：如果是新的后端模块，要在 `vite.config.ts`、`docker/openresty/nginx.conf` 和 APISIX 路由里各加一条规则。
+
+## 目录
+
+```
+├── apps/web-ele/                  应用本体（业务代码基本都在这里）
+│   ├── src/
+│   │   ├── api/
+│   │   │   ├── core/              框架约定的接口：验证码、登录、登出、当前用户
+│   │   │   ├── system/            账号、角色、登录日志、个人中心
+│   │   │   ├── cmdb/              主机、分类
+│   │   │   ├── terminal/          会话、命令记录
+│   │   │   ├── cron/              计划任务
+│   │   │   └── request.ts         axios 实例与拦截器（统一响应解包、401 处理）
+│   │   ├── views/
+│   │   │   ├── _core/             登录页、403/404、个人中心
+│   │   │   ├── system/            账户 / 角色 / 登录日志；codes.ts 是权限码清单
+│   │   │   ├── cmdb/host/         主机管理、Web 终端
+│   │   │   ├── cmdb/session/      录像回放、命令审计、实时监控
+│   │   │   └── cron/              任务计划
+│   │   ├── router/
+│   │   │   ├── routes/modules/    各模块的路由和菜单（自动加载）
+│   │   │   ├── routes/authority.ts  anyOf / withChildrenAuthority 权限写法
+│   │   │   ├── access.ts          路由级权限过滤
+│   │   │   └── guard.ts           导航守卫：未登录跳转登录页
+│   │   ├── composables/use-perm.ts  按钮级权限判断，兼容超管通配符
+│   │   ├── layouts/               后台框架、登录页框架
+│   │   └── locales/               zh-CN / en-US 文案
+│   ├── .env*                      端口、接口前缀等环境变量
+│   └── vite.config.ts             开发代理
+│
+├── packages/                      Vben 运行时框架，会打进产物
+│   ├── @core/                     最底层：设计变量、无样式组件、表单引擎、布局骨架
+│   ├── effects/                   带业务概念的一层：布局、通用组件、权限、请求封装、hooks
+│   └── stores/ locales/ styles/ … 跨层公共模块
+│
+├── internal/                      构建工具链，不进产物：vite / tsconfig / tailwind / lint 预设
+├── scripts/                       仓库脚本：lint、依赖检查、清理
+│
+├── docker/openresty/nginx.conf    生产环境的静态托管与 /api 反代
+├── Dockerfile                     Node 构建 → OpenResty
+├── docker-compose.yml
+└── deploy.sh                      构建与启停脚本
+```
+
+`packages/` 分三层：`@core` 不依赖任何 UI 库，换掉 Element Plus 也不用动；`effects` 依赖 store 和路由；`apps` 是具体应用。官方仓库里还有 web-antd、web-naive 等同级应用，这里只保留了 web-ele。
+
+## 致谢与许可
+
+前端框架来自 [Vben Admin](https://github.com/vbenjs/vue-vben-admin)，遵循 [MIT](./LICENSE) 协议。
